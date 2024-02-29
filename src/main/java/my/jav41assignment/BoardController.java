@@ -1,74 +1,85 @@
 package my.jav41assignment;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
 
 public class BoardController {
     @FXML
-    private Label leftTop;
+    private VBox vbox;
+    private Board board;
+    private final Label[][] labels = new Label[Board.gameSize][Board.gameSize];
     @FXML
-    private Label left;
-    @FXML
-    private Label leftBottom;
-    @FXML
-    private Label middleTop;
-    @FXML
-    private Label middle;
-    @FXML
-    private Label middleBottom;
-    @FXML
-    private Label rightTop;
-    @FXML
-    private Label right;
-    @FXML
-    private Label rightBottom;
-
-    private Field[][] Board = new Field[3][3];
-
-    private boolean isBoardInitialized = false;
-    public BoardController(){
+    void initialize(){
+        this.initLabels();
+        this.initializeBoard();
+        this.updateLabels();
     }
+
+    private void initLabels(){
+
+        var gridPane = new GridPane();
+
+        for( int size = 0; size < Board.gameSize; size++){
+            var column = new ColumnConstraints();
+            column.setHgrow(Priority.ALWAYS);
+            column.setPercentWidth(100.0 / Board.gameSize);
+            gridPane.getColumnConstraints().add(column);
+
+            var row = new RowConstraints();
+            row.setPercentHeight(100.0 / Board.gameSize);
+            gridPane.getRowConstraints().add(row);
+        }
+
+
+        for( int row = 0; row < Board.gameSize; row++){
+            for (int column = 0; column < Board.gameSize; column++ ){
+                var label = new Label();
+                label.setPrefSize(100,100);
+                gridPane.add(label, column, row);
+                this.labels[row][column] = label;
+            }
+        }
+        gridPane.setGridLinesVisible(true);
+        vbox.getChildren().add(gridPane);
+
+    }
+
     @FXML
     protected void onUserInput(KeyEvent keyEvent) {
-        if(!this.isBoardInitialized){
-            this.initializeBoard();
-            return;
+        this.moveBoard(keyEvent);
+        this.updateLabels();
+    }
+
+    private void updateLabels() {
+        var fields = this.board.getFields();
+
+        for( int row = 0; row < Board.gameSize; row++){
+            for (int column = 0; column < Board.gameSize; column++ ){
+                var field = fields[row][column];
+                var label = this.labels[row][column];
+
+                label.setText(field.getText() );
+                label.setBackground(new Background(new BackgroundFill(field.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+                label.setMaxWidth(Double.MAX_VALUE);
+                label.setAlignment(Pos.CENTER);
+            }
         }
+    }
+
+    private void moveBoard(KeyEvent keyEvent) {
         try {
-            this.move(keyEvent.getCode());
+            this.board.move(keyEvent.getCode());
         } catch ( Exception  wrongKey ){
             // do nothing
         }
     }
 
-    private void move(KeyCode key) {
-
-        var direction = switch (key){
-            case KeyCode.LEFT, KeyCode.UP -> "-";
-            case KeyCode.RIGHT, KeyCode.DOWN -> "+";
-            default -> throw new RuntimeException() ;
-        };
-
-        for( var row : this.Board){
-            for (var field : row ){
-                field.move();
-            }
-        }
-    }
 
     private void initializeBoard() {
-        Board[0][0] = new Field( 2, this.leftTop );
-        Board[0][1] = new Field( 0, this.middleTop );
-        Board[0][2] = new Field( 0, this.rightTop );
-        Board[1][0] = new Field( 0, this.left );
-        Board[1][1] = new Field( 0, this.middle );
-        Board[1][2] = new Field( 0, this.right );
-        Board[2][0] = new Field( 4, this.leftBottom );
-        Board[2][1] = new Field( 0, this.middleBottom );
-        Board[2][2] = new Field( 0, this.rightBottom );
-        this.isBoardInitialized = true;
+        this.board = new Board( new ValueRandomizer());
     }
 }

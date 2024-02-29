@@ -1,26 +1,23 @@
 package my.jav41assignment;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Paint;
 
 public class Field {
-    private Integer startValue;
-    private FieldFormat formatter;
-    private Label label;
-    public Field( Integer startValue, Label label ){
-       this.startValue = startValue;
-       this.label = label;
+    private Integer value;
 
-       this.formatter = new FieldFormat(this.startValue);
+    public Field( Integer startValue ){
+       value = startValue;
 
-        this.label.setText(this.startValue == 0 ? "" : this.startValue.toString() );
-        this.label.setBackground(new Background(new BackgroundFill(this.formatter.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
-        this.label.setMaxWidth(Double.MAX_VALUE);
-        this.label.setAlignment(Pos.CENTER);
+    }
+    public void setValue(Integer value){
+        this.value = value;
+    }
+    public String getText(){
+        return value == 0 ? "" : value.toString();
+    }
+
+    public Paint getColor(){
+        return new FieldFormat(this.value).getColor();
     }
 
     public void move(){
