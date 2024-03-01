@@ -29,6 +29,7 @@ class RandomizerMock implements Randomizer{
 }
 
 class BoardTest {
+    int end = Board.gameSize -1;
     Board board;
     RandomizerMock mock;
     @BeforeEach
@@ -45,9 +46,31 @@ class BoardTest {
     }
     @Test
     void board_should_be_moved_right(){
-        board.move( KeyCode.RIGHT);
+        board.move( KeyCode.RIGHT );
         var fields = board.getFields();
-        Assertions.assertEquals("2", fields[0][2].getText());
-        Assertions.assertEquals("4", fields[1][2].getText());
+        Assertions.assertEquals("2", fields[0][end].getText());
+        Assertions.assertEquals("4", fields[1][end].getText());
     }
+    @Test
+    void board_should_be_moved_left(){
+        board.move( KeyCode.LEFT );
+        var fields = board.getFields();
+        Assertions.assertEquals("2", fields[0][0].getText());
+        Assertions.assertEquals("4", fields[1][0].getText());
+    }
+    @Test
+    void board_should_be_moved_up(){
+        board.move( KeyCode.UP );
+        var fields = board.getFields();
+        Assertions.assertEquals("2", fields[0][0].getText());
+        Assertions.assertEquals("4", fields[0][1].getText());
+    }
+    @Test
+    void board_should_be_moved_down(){
+        board.move( KeyCode.DOWN );
+        var fields = board.getFields();
+        Assertions.assertEquals("2", fields[end][0].getText());
+        Assertions.assertEquals("4", fields[end][1].getText());
+    }
+
 }

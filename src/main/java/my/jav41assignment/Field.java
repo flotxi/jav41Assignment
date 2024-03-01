@@ -12,6 +12,9 @@ public class Field {
     public void setValue(Integer value){
         this.value = value;
     }
+    public Integer getValue(){
+        return value;
+    }
     public String getText(){
         return value == 0 ? "" : value.toString();
     }
@@ -20,7 +23,4 @@ public class Field {
         return new FieldFormat(this.value).getColor();
     }
 
-    public void move(){
-
-    }
 }

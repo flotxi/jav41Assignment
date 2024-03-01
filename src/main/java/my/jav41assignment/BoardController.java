@@ -1,5 +1,6 @@
 package my.jav41assignment;
 
+import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -7,16 +8,60 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 public class BoardController {
+    @FXML
+    public Label time;
+    @FXML
+    public Label score ;
     @FXML
     private VBox vbox;
     private Board board;
     private final Label[][] labels = new Label[Board.gameSize][Board.gameSize];
+
+    private AnimationTimer timer;
     @FXML
     void initialize(){
-        this.initLabels();
-        this.initializeBoard();
-        this.updateLabels();
+        initLabels();
+        initializeBoard();
+        initializeScore();
+        updateLabels();
+        startGameTimer();
+    }
+
+    private void initializeScore() {
+        setScore(0);
+    }
+
+    private void setScore(int newScore){
+        score.setText("Punktestand: " + newScore);
+    }
+
+    private void startGameTimer() {
+        var gameStart = LocalDateTime.now();
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+
+                LocalDateTime tempDateTime = gameStart;
+
+                long hours = tempDateTime.until( LocalDateTime.now(), ChronoUnit.HOURS );
+                tempDateTime = tempDateTime.plusHours( hours );
+
+                long minutes = tempDateTime.until( LocalDateTime.now(), ChronoUnit.MINUTES );
+                tempDateTime = tempDateTime.plusMinutes( minutes );
+
+                long seconds = tempDateTime.until( LocalDateTime.now(), ChronoUnit.SECONDS );
+
+                time.setText(  "Spieldauer: " +
+                        String.format("%02d", hours) + ":" +
+                        String.format("%02d", minutes)  + ":"  +
+                        String.format("%02d", seconds) );
+            }
+        };
+        timer.start();
     }
 
     private void initLabels(){
@@ -50,17 +95,17 @@ public class BoardController {
 
     @FXML
     protected void onUserInput(KeyEvent keyEvent) {
-        this.moveBoard(keyEvent);
-        this.updateLabels();
+        moveBoard(keyEvent);
+        updateLabels();
     }
 
     private void updateLabels() {
-        var fields = this.board.getFields();
+        var fields = board.getFields();
 
         for( int row = 0; row < Board.gameSize; row++){
             for (int column = 0; column < Board.gameSize; column++ ){
                 var field = fields[row][column];
-                var label = this.labels[row][column];
+                var label = labels[row][column];
 
                 label.setText(field.getText() );
                 label.setBackground(new Background(new BackgroundFill(field.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -72,7 +117,8 @@ public class BoardController {
 
     private void moveBoard(KeyEvent keyEvent) {
         try {
-            this.board.move(keyEvent.getCode());
+           var newScore = board.move(keyEvent.getCode());
+           setScore(newScore);
         } catch ( Exception  wrongKey ){
             // do nothing
         }
@@ -80,6 +126,6 @@ public class BoardController {
 
 
     private void initializeBoard() {
-        this.board = new Board( new ValueRandomizer());
+        board = new Board( new ValueRandomizer());
     }
 }
