@@ -5,31 +5,35 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-record FieldCoordinatesWithValue(Integer rowToCheck, Integer columnToCheck, String expectedFieldValue) {
+record FieldCoordinatesWithValue(Integer rowToCheck, Integer columnToCheck, Integer expectedFieldValue) {
 }
 
 class RandomizerMock implements Randomizer {
 
-    public FieldCoordinatesWithValue[] mockFields;
+    public FieldCoordinatesWithValue[] mockFields = new FieldCoordinatesWithValue[Board.gameSize * Board.gameSize];
 
-    private Integer callCount = 0;
+    private Integer currentIndex = 0;
 
     @Override
     public Integer getNextNumber() {
-        if (callCount == 0) {
-            callCount++;
-            return 2;
-        } else {
-            return 4;
+        Integer result;
+        try{
+            result = mockFields[currentIndex].expectedFieldValue();
+            currentIndex++;
+        }catch (ArrayIndexOutOfBoundsException e){
+            result = 0;
         }
+
+        return result;
     }
 
     @Override
     public FieldCoordinates getNextFieldCoordinates() {
-        if (callCount == 0) {
-            return new FieldCoordinates(0, 0);
-        } else {
-            return new FieldCoordinates(1, 1);
+        try {
+            var coordinatesWithValues = mockFields[currentIndex];
+            return new FieldCoordinates(coordinatesWithValues.rowToCheck(), coordinatesWithValues.columnToCheck());
+        } catch(ArrayIndexOutOfBoundsException e){
+            return new FieldCoordinates(2,2);   // fallback
         }
     }
 }
@@ -42,10 +46,15 @@ class TestHelper {
     protected void fieldsAreEqualTo(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
         var fields = board.getFields();
         for (int i = 0; i < fieldCoordinatesWithValue.length; i++) {
-            Assertions.assertEquals(fieldCoordinatesWithValue[i].expectedFieldValue(),
+            Assertions.assertEquals(fieldCoordinatesWithValue[i].expectedFieldValue().toString(),
                     fields[fieldCoordinatesWithValue[i].rowToCheck()][fieldCoordinatesWithValue[i].columnToCheck()].getText());
 
         }
+    }
+    protected void initializeBoardWithMocker(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
+        mock = new RandomizerMock();
+        mock.mockFields = fieldCoordinatesWithValue;
+        board = new Board(mock);
     }
 }
 
@@ -53,59 +62,63 @@ class BoardMovement extends TestHelper {
 
     @BeforeEach
     void setUp() {
-        mock = new RandomizerMock();
-        board = new Board(mock);
+        initializeBoardWithMocker(new FieldCoordinatesWithValue(0, 0, 2),
+                new FieldCoordinatesWithValue(1, 1, 4));
     }
 
     @Test
     void board_should_be_initialized_with_2_values() {
-        fieldsAreEqualTo(new FieldCoordinatesWithValue(0, 0, "2"),
-                new FieldCoordinatesWithValue(1, 1, "4"));
+        fieldsAreEqualTo(new FieldCoordinatesWithValue(0, 0, 2),
+                new FieldCoordinatesWithValue(1, 1, 4));
     }
 
 
     @Test
     void board_should_be_moved_right() {
         board.move(KeyCode.RIGHT);
-        fieldsAreEqualTo(new FieldCoordinatesWithValue(0, end, "2"),
-                new FieldCoordinatesWithValue(1, end, "4"));
+
+        fieldsAreEqualTo(new FieldCoordinatesWithValue(0, end, 2),
+                new FieldCoordinatesWithValue(1, end, 4));
     }
 
     @Test
     void board_should_be_moved_left() {
         board.move(KeyCode.LEFT);
-        fieldsAreEqualTo(new FieldCoordinatesWithValue(0, 0, "2"),
-                new FieldCoordinatesWithValue(1, 1, "4"));
+
+        fieldsAreEqualTo(new FieldCoordinatesWithValue(0, 0, 2),
+                new FieldCoordinatesWithValue(1, 0, 4));
     }
 
     @Test
     void board_should_be_moved_up() {
         board.move(KeyCode.UP);
-        fieldsAreEqualTo(new FieldCoordinatesWithValue(0, 0, "2"),
-                new FieldCoordinatesWithValue(0, 1, "4"));
+
+        fieldsAreEqualTo(new FieldCoordinatesWithValue(0, 0, 2),
+                new FieldCoordinatesWithValue(0, 1, 4));
     }
 
     @Test
     void board_should_be_moved_down() {
         board.move(KeyCode.DOWN);
-        fieldsAreEqualTo(new FieldCoordinatesWithValue(end, 0, "2"),
-                new FieldCoordinatesWithValue(end, 1, "4"));
+
+        fieldsAreEqualTo(new FieldCoordinatesWithValue(end, 0, 2),
+                new FieldCoordinatesWithValue(end, 1, 4));
     }
 
 }
 
 class BoardRules extends TestHelper {
-    @BeforeEach
-    void setUp() {
-        mock = new RandomizerMock();
-    }
 
     @Test
     void game_should_be_over() {
-        board = new Board(mock);
+        initializeBoardWithMocker(new FieldCoordinatesWithValue(0, 0, 2),
+                new FieldCoordinatesWithValue(1, 1, 4));
+
         board.move(KeyCode.DOWN);
-        var fields = board.getFields();
-        Assertions.assertEquals("2", fields[end][0].getText());
-        Assertions.assertEquals("4", fields[end][1].getText());
+
+        fieldsAreEqualTo(new FieldCoordinatesWithValue(end, 0, 2),
+                new FieldCoordinatesWithValue(end, 1, 4));
     }
+
+
 }

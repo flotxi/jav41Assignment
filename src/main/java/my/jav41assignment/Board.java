@@ -12,17 +12,17 @@ public class Board {
 
     public Board(Randomizer randomizer){
         this.randomizer = randomizer;
-        // https://www.jetbrains.com/guide/java/tutorials/marco-codes-junit/introduction/
-        // 18 MInuten
+        initializeFields();
+        addNewField();
+        addNewField();
+    }
+
+    private void initializeFields() {
         for( int row = 0; row < gameSize; row++){
             for (int column = 0; column < gameSize; column++ ){
                 fields[row][column] = new Field( 0 );
             }
         }
-
-        addNewField();
-        addNewField();
-
     }
 
     private void addNewField() {
@@ -30,6 +30,8 @@ public class Board {
 
         int tries = 0;
         int maxTries = Board.gameSize * Board.gameSize;
+        //todo change to do while
+
         while (fields[fieldCoordinates.row()][fieldCoordinates.column()].getValue() != 0){
             tries++;
             fieldCoordinates = randomizer.getNextFieldCoordinates();
@@ -99,14 +101,11 @@ public class Board {
                 rowCount = rowCount + direction;
 
             }while(rowCount != endPoint );
-
         }
         if(fieldsGotMoved) {
             addNewField();
         }
-
         return score;
-
     }
     public Field[][] getFields(){
         return this.fields;
