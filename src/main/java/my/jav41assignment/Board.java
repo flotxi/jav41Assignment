@@ -26,51 +26,31 @@ public class Board {
     }
 
     private void addNewField() {
-        var fieldCoordinates = randomizer.getNextFieldCoordinates();
-
+        FieldCoordinates fieldCoordinates;
         int tries = 0;
         int maxTries = Board.gameSize * Board.gameSize;
-        //todo change to do while
-
-        while (fields[fieldCoordinates.row()][fieldCoordinates.column()].getValue() != 0){
-            tries++;
+        do{
             fieldCoordinates = randomizer.getNextFieldCoordinates();
+            tries++;
             if(tries == maxTries){
                 break;
             }
         }
+        while (fields[fieldCoordinates.row()][fieldCoordinates.column()].getValue() != 0);
 
-        fields[fieldCoordinates.row()][fieldCoordinates.column()].setValue(this.randomizer.getNextNumber());
+        if (fields[fieldCoordinates.row()][fieldCoordinates.column()].getValue() == 0) {
+            fields[fieldCoordinates.row()][fieldCoordinates.column()].setValue(this.randomizer.getNextNumber());
+        }
     }
 
     public Integer move(KeyCode key) {
-
-        var startPoint = switch (key){
-            case KeyCode.LEFT, KeyCode.DOWN  -> Board.gameSize - 1;
-            case KeyCode.UP, KeyCode.RIGHT-> 0;
-            default -> throw new RuntimeException() ;
-        };
-
-        var endPoint = switch (key){
-            case KeyCode.LEFT, KeyCode.DOWN -> -1;
-            case  KeyCode.UP,KeyCode.RIGHT -> Board.gameSize ;
-            default -> throw new RuntimeException() ;
-        };
-
-        var direction = switch (key){
-            case KeyCode.LEFT,  KeyCode.DOWN -> - 1;
-            case KeyCode.UP, KeyCode.RIGHT -> 1;
-            default -> throw new RuntimeException() ;
-        };
+        var movement = new Movement(key);
         var fieldsGotMoved = false;
         for(int i = 0; i < gameSize; i++){
-            var rowCount = startPoint;
-
+            var rowCount = movement.getStartPoint();
             do{
-
-                var columnCount = startPoint;
+                var columnCount = movement.getStartPoint();
                 do{
-
                     var field = fields[rowCount][columnCount];
                     try{
                         var neighbour = switch (key){
@@ -94,13 +74,13 @@ public class Board {
                     // do nothing
                     }
 
-                    columnCount = columnCount + direction;
+                    columnCount = columnCount + movement.getDirection();
 
-                }while(columnCount != endPoint );
+                }while(columnCount != movement.getEndPoint() );
 
-                rowCount = rowCount + direction;
+                rowCount = rowCount + movement.getDirection();
 
-            }while(rowCount != endPoint );
+            }while(rowCount != movement.getEndPoint() );
         }
         if(fieldsGotMoved) {
             addNewField();

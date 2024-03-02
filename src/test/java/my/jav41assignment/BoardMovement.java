@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 record FieldCoordinatesWithValue(Integer rowToCheck, Integer columnToCheck, Integer expectedFieldValue) {
 }
 
@@ -13,13 +16,17 @@ class RandomizerMock implements Randomizer {
     public FieldCoordinatesWithValue[] mockFields = new FieldCoordinatesWithValue[Board.gameSize * Board.gameSize];
 
     private Integer currentIndex = 0;
+    private Integer currenNumbertIndex = 0;
 
     @Override
     public Integer getNextNumber() {
         Integer result;
         try{
-            result = mockFields[currentIndex].expectedFieldValue();
-            currentIndex++;
+            result = mockFields[currenNumbertIndex].expectedFieldValue();
+            currenNumbertIndex++;
+            if (currenNumbertIndex == ( Board.gameSize * Board.gameSize - 1 ) ){
+                currenNumbertIndex = 0;
+            }
         }catch (ArrayIndexOutOfBoundsException e){
             result = 0;
         }
@@ -31,6 +38,10 @@ class RandomizerMock implements Randomizer {
     public FieldCoordinates getNextFieldCoordinates() {
         try {
             var coordinatesWithValues = mockFields[currentIndex];
+            currentIndex++;
+            if (currentIndex == ( Board.gameSize * Board.gameSize - 1 ) ){
+                currentIndex = 0;
+            }
             return new FieldCoordinates(coordinatesWithValues.rowToCheck(), coordinatesWithValues.columnToCheck());
         } catch(ArrayIndexOutOfBoundsException e){
             return new FieldCoordinates(2,2);   // fallback
@@ -111,13 +122,68 @@ class BoardRules extends TestHelper {
 
     @Test
     void game_should_be_over() {
-        initializeBoardWithMocker(new FieldCoordinatesWithValue(0, 0, 2),
-                new FieldCoordinatesWithValue(1, 1, 4));
+        fillBoardCompletely();
 
-        board.move(KeyCode.DOWN);
+        var downScore = board.move(KeyCode.DOWN);
+        var leftScore = board.move(KeyCode.LEFT);
+        var upScore = board.move(KeyCode.UP);
+        var rightScore = board.move(KeyCode.RIGHT);
 
-        fieldsAreEqualTo(new FieldCoordinatesWithValue(end, 0, 2),
-                new FieldCoordinatesWithValue(end, 1, 4));
+        isScoreEverytimeTheSame(downScore, leftScore, upScore, rightScore);
+    }
+
+    private void fillBoardCompletely() {
+        initializeBoardWithMocker(
+                new FieldCoordinatesWithValue(0, 0, 2),
+                new FieldCoordinatesWithValue(0, 1, 4),
+                new FieldCoordinatesWithValue(0, 2, 8),
+                new FieldCoordinatesWithValue(0, 3, 16),
+                new FieldCoordinatesWithValue(1, 0, 32),
+                new FieldCoordinatesWithValue(1, 1, 64),
+                new FieldCoordinatesWithValue(1, 2, 128),
+                new FieldCoordinatesWithValue(1, 3, 64),
+                new FieldCoordinatesWithValue(2, 0, 2),
+                new FieldCoordinatesWithValue(2, 1, 4),
+                new FieldCoordinatesWithValue(2, 2, 8),
+                new FieldCoordinatesWithValue(2, 3, 16),
+                new FieldCoordinatesWithValue(3, 0, 32),
+                new FieldCoordinatesWithValue(3, 1, 64),
+                new FieldCoordinatesWithValue(3, 2, 128),
+                new FieldCoordinatesWithValue(3, 3, 2));
+
+        Method addNewField;
+        try {
+            addNewField = Board.class.getDeclaredMethod("addNewField");
+            addNewField.setAccessible(true);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+            addNewField.invoke(board);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void isScoreEverytimeTheSame(Integer downScore, Integer leftScore, Integer upScore, Integer rightScore) {
+        Assertions.assertEquals(downScore, leftScore);
+        Assertions.assertEquals(leftScore, upScore);
+        Assertions.assertEquals(upScore, rightScore);
     }
 
 
