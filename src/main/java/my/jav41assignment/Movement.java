@@ -3,30 +3,106 @@ package my.jav41assignment;
 import javafx.scene.input.KeyCode;
 
 public class Movement {
-
-    private KeyCode key;
+    private KeyResults keyResult;
     public Movement(KeyCode key){
-        this.key = key;
-    }
-    public Integer getStartPoint(){
-        return switch (key){
-            case KeyCode.LEFT, KeyCode.DOWN  -> Board.gameSize - 1;
-            case KeyCode.UP, KeyCode.RIGHT-> 0;
-            default -> throw new RuntimeException() ;
+        keyResult = switch (key){
+            case KeyCode.LEFT -> new LeftKey();
+            case KeyCode.UP-> new UpKey();
+            case KeyCode.DOWN -> new DownKey();
+            case KeyCode.RIGHT -> new RightKey();
+            default-> throw new RuntimeException() ;
         };
+    }
+    public FieldCoordinates getNeighbour(){
+        return keyResult.getNeighbour();
+    }
+
+    public Integer getStartPoint(){
+        return keyResult.getStartPoint();
     }
     public Integer getEndPoint(){
-        return switch (key){
-            case KeyCode.LEFT, KeyCode.DOWN -> -1;
-            case  KeyCode.UP,KeyCode.RIGHT -> Board.gameSize ;
-            default -> throw new RuntimeException() ;
-        };
+        return keyResult.getEndPoint();
     }
     public Integer getDirection(){
-        return switch (key){
-            case KeyCode.LEFT,  KeyCode.DOWN -> - 1;
-            case KeyCode.UP, KeyCode.RIGHT -> 1;
-            default -> throw new RuntimeException() ;
-        };
+        return keyResult.getDirection();
+    }
+
+    private interface KeyResults{
+        Integer getDirection();
+        Integer getEndPoint();
+        Integer getStartPoint();
+        FieldCoordinates getNeighbour();
+    }
+    private class LeftKey implements KeyResults{
+        @Override
+        public Integer getDirection() {
+            return -1;
+        }
+        @Override
+        public Integer getEndPoint() {
+            return -1;
+        }
+        @Override
+        public Integer getStartPoint() {
+            return Board.gameSize - 1;
+        }
+        @Override
+        public FieldCoordinates getNeighbour() {
+            return new FieldCoordinates(0,1);
+        }
+    }
+    private class DownKey implements KeyResults{
+        @Override
+        public Integer getDirection() {
+            return -1;
+        }
+        @Override
+        public Integer getEndPoint() {
+            return -1;
+        }
+        @Override
+        public Integer getStartPoint() {
+            return Board.gameSize - 1;
+        }
+        @Override
+        public FieldCoordinates getNeighbour() {
+            return new FieldCoordinates(-1,0);
+        }
+    }
+    private class RightKey implements KeyResults{
+        @Override
+        public Integer getDirection() {
+            return 1;
+        }
+        @Override
+        public Integer getEndPoint() {
+            return Board.gameSize;
+        }
+        @Override
+        public Integer getStartPoint() {
+            return 0;
+        }
+        @Override
+        public FieldCoordinates getNeighbour() {
+            return new FieldCoordinates(0,-1);
+        }
+    }
+    private class UpKey implements KeyResults{
+        @Override
+        public Integer getDirection() {
+            return 1;
+        }
+        @Override
+        public Integer getEndPoint() {
+            return Board.gameSize;
+        }
+        @Override
+        public Integer getStartPoint() {
+            return 0;
+        }
+        @Override
+        public FieldCoordinates getNeighbour() {
+            return new FieldCoordinates(1,0);
+        }
     }
 }
