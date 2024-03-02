@@ -2,10 +2,9 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.control.Label?>
+
 <VBox alignment="CENTER" fx:id="vbox" onKeyPressed="#onUserInput"
-      prefHeight="640.0" prefWidth="864.0" spacing="20.0"
       xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="my.jav41assignment.BoardController">
     <padding>
