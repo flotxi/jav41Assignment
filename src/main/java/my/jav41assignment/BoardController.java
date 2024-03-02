@@ -11,7 +11,7 @@ import javafx.scene.layout.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class BoardController {
+public class BoardController implements GameEventListener {
     @FXML
     public Label time;
     @FXML
@@ -127,5 +127,16 @@ public class BoardController {
 
     private void initializeBoard() {
         board = new Board( new ValueRandomizer());
+        board.addGameEventListener(this);
+    }
+
+    @Override
+    public void onGameWon() {
+
+    }
+
+    @Override
+    public void onGameLost() {
+
     }
 }

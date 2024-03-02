@@ -15,17 +15,17 @@ class RandomizerMock implements Randomizer {
 
     public FieldCoordinatesWithValue[] mockFields = new FieldCoordinatesWithValue[Board.gameSize * Board.gameSize];
 
-    private Integer currentIndex = 0;
-    private Integer currenNumbertIndex = 0;
+    public Integer currentIndex = 0;
+    public Integer currentNumberIndex = 0;
 
     @Override
     public Integer getNextNumber() {
         Integer result;
         try{
-            result = mockFields[currenNumbertIndex].expectedFieldValue();
-            currenNumbertIndex++;
-            if (currenNumbertIndex == ( Board.gameSize * Board.gameSize - 1 ) ){
-                currenNumbertIndex = 0;
+            result = mockFields[currentNumberIndex].expectedFieldValue();
+            currentNumberIndex++;
+            if (currentNumberIndex == ( Board.gameSize * Board.gameSize - 1 ) ){
+                currentNumberIndex = 0;
             }
         }catch (ArrayIndexOutOfBoundsException e){
             result = 0;
@@ -67,6 +67,7 @@ class TestHelper {
         mock.mockFields = fieldCoordinatesWithValue;
         board = new Board(mock);
     }
+
 }
 
 class BoardMovement extends TestHelper {
@@ -122,7 +123,7 @@ class BoardRules extends TestHelper {
 
     @Test
     void game_should_be_over() {
-        fillBoardCompletely();
+        fillBoardCompletely(new FieldCoordinatesWithValue(3, 3, 2));
 
         var downScore = board.move(KeyCode.DOWN);
         var leftScore = board.move(KeyCode.LEFT);
@@ -131,8 +132,30 @@ class BoardRules extends TestHelper {
 
         isScoreEverytimeTheSame(downScore, leftScore, upScore, rightScore);
     }
+    @Test
+    void game_should_be_won() {
+        fillBoardCompletely(new FieldCoordinatesWithValue(0, 3, 2048));
 
-    private void fillBoardCompletely() {
+        final Boolean[] gameIsWon = {false};
+
+        board.addGameEventListener(new GameEventListener() {
+            @Override
+            public void onGameWon() {
+                gameIsWon[0] = true;
+            }
+            @Override
+            public void onGameLost() {
+
+            }
+        });
+        mock.currentIndex = mock.currentNumberIndex = 15;
+        board.move(KeyCode.DOWN);
+
+        Assertions.assertTrue(gameIsWon[0]);
+
+    }
+
+    private void fillBoardCompletely(FieldCoordinatesWithValue lastField) {
         initializeBoardWithMocker(
                 new FieldCoordinatesWithValue(0, 0, 2),
                 new FieldCoordinatesWithValue(0, 1, 4),
@@ -149,7 +172,7 @@ class BoardRules extends TestHelper {
                 new FieldCoordinatesWithValue(3, 0, 32),
                 new FieldCoordinatesWithValue(3, 1, 64),
                 new FieldCoordinatesWithValue(3, 2, 128),
-                new FieldCoordinatesWithValue(3, 3, 2));
+                lastField);
 
         Method addNewField;
         try {
@@ -185,6 +208,5 @@ class BoardRules extends TestHelper {
         Assertions.assertEquals(leftScore, upScore);
         Assertions.assertEquals(upScore, rightScore);
     }
-
 
 }
