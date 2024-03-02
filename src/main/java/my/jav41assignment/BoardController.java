@@ -4,6 +4,8 @@ import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
@@ -24,7 +26,11 @@ public class BoardController implements GameEventListener {
     private AnimationTimer timer;
     @FXML
     void initialize(){
-        initLabels();
+        createLabels();
+        startGame();
+    }
+
+    private void startGame() {
         initializeBoard();
         initializeScore();
         updateLabels();
@@ -64,7 +70,7 @@ public class BoardController implements GameEventListener {
         timer.start();
     }
 
-    private void initLabels(){
+    private void createLabels(){
 
         var gridPane = new GridPane();
 
@@ -127,16 +133,30 @@ public class BoardController implements GameEventListener {
 
     private void initializeBoard() {
         board = new Board( new ValueRandomizer());
-        board.addGameEventListener(this);
+        board.attachGameEventListener(this);
     }
 
     @Override
     public void onGameWon() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Du hast gewonnen! Möchtest du weiterspielen?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+        alert.showAndWait();
 
+        if (alert.getResult() == ButtonType.NO) {
+            startGame();
+        }else{
+            Board.gameEndValue = Board.gameEndValue * 2;
+        }
     }
 
     @Override
     public void onGameLost() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Du hast verloren! Möchtest du nochmal von vorn beginnen?", ButtonType.YES, ButtonType.NO);
+        alert.showAndWait();
 
+        if (alert.getResult() == ButtonType.YES) {
+            startGame();
+        }else{
+            System.exit(0);
+        }
     }
 }

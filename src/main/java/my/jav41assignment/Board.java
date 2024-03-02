@@ -12,16 +12,16 @@ public class Board {
     private final Randomizer randomizer;
     private final Field[][] fields = new Field[gameSize][gameSize];
     private Integer score = 0;
-    private List<GameEventListener> eventListeners;
+    private final List<GameEventListener> eventListeners;
 
     public Board(Randomizer randomizer){
-        eventListeners = new ArrayList<GameEventListener>();
+        eventListeners = new ArrayList<>();
         this.randomizer = randomizer;
         initializeFields();
         addNewField();
         addNewField();
     }
-    public void addGameEventListener(GameEventListener eventListener)
+    public void attachGameEventListener(GameEventListener eventListener)
     {
         this.eventListeners.add(eventListener);
     }
@@ -81,39 +81,43 @@ public class Board {
 
                     columnCount = columnCount + movement.getDirection();
 
-                }while(columnCount != movement.getEndPoint() );
+                }while(!columnCount.equals(movement.getEndPoint()));
 
                 rowCount = rowCount + movement.getDirection();
 
-            }while(rowCount != movement.getEndPoint() );
+            }while(!rowCount.equals(movement.getEndPoint()));
         }
         if(fieldsGotMoved) {
             addNewField();
 
             if (isGameWon()){
-                eventListeners.forEach((listener) -> listener.onGameWon());
+                eventListeners.forEach(GameEventListener::onGameWon);
             }
         }else{
             if(isGameOver()) {
-                eventListeners.forEach((listener) -> listener.onGameLost());
+                eventListeners.forEach(GameEventListener::onGameLost);
             }
         }
         return score;
     }
 
     private boolean isGameOver() {
-        return false;
+        return !isValueInFields(0);
     }
 
-    private boolean isGameWon() {
+    private boolean isValueInFields(int value) {
         for( var row = 0; row < gameSize; row++){
             for( var column = 0; column < gameSize; column++){
-                if(fields[row][column].getValue().equals(gameEndValue)){
+                if (fields[row][column].getValue() == value) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private boolean isGameWon() {
+        return isValueInFields(gameEndValue);
     }
 
     public Field[][] getFields(){
