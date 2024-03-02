@@ -1,7 +1,6 @@
 package my.jav41assignment;
 
 import javafx.scene.input.KeyCode;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,13 +60,8 @@ public class Board {
                 do{
                     var field = fields[rowCount][columnCount];
                     try{
-                        var neighbour = switch (key){
-                            case KeyCode.LEFT -> fields[rowCount][columnCount + 1];
-                            case KeyCode.UP-> fields[rowCount + 1][columnCount];
-                            case KeyCode.DOWN -> fields[rowCount - 1][columnCount];
-                            case KeyCode.RIGHT -> fields[rowCount][columnCount - 1];
-                            default-> throw new RuntimeException() ;
-                        };
+                        var neighbour = fields[rowCount + movement.getNeighbour().row()]
+                                            [columnCount + movement.getNeighbour().column()];
                         if (field.getValue().equals(neighbour.getValue() )|| field.getValue() == 0){
                             field.setValue(neighbour.getValue() + field.getValue());
                             score = score + neighbour.getValue();
