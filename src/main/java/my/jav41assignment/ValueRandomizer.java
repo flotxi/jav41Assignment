@@ -3,7 +3,6 @@ package my.jav41assignment;
 import java.util.Random;
 
 public class ValueRandomizer implements Randomizer{
-
     private final Random random;
     public ValueRandomizer(){
         random = new Random();
@@ -12,7 +11,6 @@ public class ValueRandomizer implements Randomizer{
     public Integer getNextNumber() {
         return this.random.nextBoolean() ? 2 : 4;
     }
-
     @Override
     public FieldCoordinates getNextFieldCoordinates() {
         var maxGameLength = Board.gameSize;

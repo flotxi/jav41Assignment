@@ -9,7 +9,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -22,8 +21,6 @@ public class BoardController implements GameEventListener {
     private VBox vbox;
     private Board board;
     private final Label[][] labels = new Label[Board.gameSize][Board.gameSize];
-
-    private AnimationTimer timer;
     @FXML
     void initialize(){
         createLabels();
@@ -47,31 +44,29 @@ public class BoardController implements GameEventListener {
 
     private void startGameTimer() {
         var gameStart = LocalDateTime.now();
-        timer = new AnimationTimer() {
+        AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-
                 LocalDateTime tempDateTime = gameStart;
 
-                long hours = tempDateTime.until( LocalDateTime.now(), ChronoUnit.HOURS );
-                tempDateTime = tempDateTime.plusHours( hours );
+                long hours = tempDateTime.until(LocalDateTime.now(), ChronoUnit.HOURS);
+                tempDateTime = tempDateTime.plusHours(hours);
 
-                long minutes = tempDateTime.until( LocalDateTime.now(), ChronoUnit.MINUTES );
-                tempDateTime = tempDateTime.plusMinutes( minutes );
+                long minutes = tempDateTime.until(LocalDateTime.now(), ChronoUnit.MINUTES);
+                tempDateTime = tempDateTime.plusMinutes(minutes);
 
-                long seconds = tempDateTime.until( LocalDateTime.now(), ChronoUnit.SECONDS );
+                long seconds = tempDateTime.until(LocalDateTime.now(), ChronoUnit.SECONDS);
 
-                time.setText(  "Spieldauer: " +
+                time.setText("Spieldauer: " +
                         String.format("%02d", hours) + ":" +
-                        String.format("%02d", minutes)  + ":"  +
-                        String.format("%02d", seconds) );
+                        String.format("%02d", minutes) + ":" +
+                        String.format("%02d", seconds));
             }
         };
         timer.start();
     }
 
     private void createLabels(){
-
         var gridPane = new GridPane();
 
         for( int size = 0; size < Board.gameSize; size++){
@@ -84,7 +79,6 @@ public class BoardController implements GameEventListener {
             row.setPercentHeight(100.0 / Board.gameSize);
             gridPane.getRowConstraints().add(row);
         }
-
 
         for( int row = 0; row < Board.gameSize; row++){
             for (int column = 0; column < Board.gameSize; column++ ){
