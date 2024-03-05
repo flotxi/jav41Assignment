@@ -12,7 +12,7 @@ import javafx.scene.layout.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class BoardController implements GameEventListener {
+public class BoardController {
     @FXML
     public Label time;
     @FXML
@@ -124,14 +124,14 @@ public class BoardController implements GameEventListener {
         }
     }
 
-
     private void initializeBoard() {
         board = new Board( new ValueRandomizer());
-        board.attachGameEventListener(this);
+        board.attachGameWonEventListener(this::onGameWon);
+        board.attachGameLostEventListener(this::onGameLost);
     }
 
-    @Override
     public void onGameWon() {
+        
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Du hast gewonnen! Möchtest du weiterspielen?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
         alert.showAndWait();
 
@@ -142,7 +142,10 @@ public class BoardController implements GameEventListener {
         }
     }
 
-    @Override
+    private void showResult(String message, Object action) {
+    }
+
+
     public void onGameLost() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Du hast verloren! Möchtest du nochmal von vorn beginnen?", ButtonType.YES, ButtonType.NO);
         alert.showAndWait();

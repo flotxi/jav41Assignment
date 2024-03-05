@@ -11,18 +11,24 @@ public class Board {
     private final Randomizer randomizer;
     private final Field[][] fields = new Field[gameSize][gameSize];
     private Integer score = 0;
-    private final List<GameEventListener> eventListeners;
+    private final List<GameWonListener> gameWonListeners;
+    private final List<GameLostListener> gameLostListeners;
 
     public Board(Randomizer randomizer){
-        eventListeners = new ArrayList<>();
+        gameWonListeners = new ArrayList<>();
+        gameLostListeners = new ArrayList<>();
         this.randomizer = randomizer;
         initializeFields();
         addNewField();
         addNewField();
     }
-    public void attachGameEventListener(GameEventListener eventListener)
+    public void attachGameWonEventListener(GameWonListener eventListener)
     {
-        this.eventListeners.add(eventListener);
+        this.gameWonListeners.add(eventListener);
+    }
+    public void attachGameLostEventListener(GameLostListener eventListener)
+    {
+        this.gameLostListeners.add(eventListener);
     }
     private void initializeFields() {
         for( int row = 0; row < gameSize; row++){
@@ -85,11 +91,11 @@ public class Board {
             addNewField();
 
             if (isGameWon()){
-                eventListeners.forEach(GameEventListener::onGameWon);
+                gameWonListeners.forEach(GameWonListener::onGameWon);
             }
         }else{
             if(isGameOver()) {
-                eventListeners.forEach(GameEventListener::onGameLost);
+                gameLostListeners.forEach(GameLostListener::onGameLost);
             }
         }
         return score;

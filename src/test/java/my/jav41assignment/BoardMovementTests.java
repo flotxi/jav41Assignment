@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-class BoardMovement extends TestHelper {
+class BoardMovementTests extends TestHelper {
 
     @BeforeEach
     void setUp() {
@@ -82,17 +82,8 @@ class BoardRules extends TestHelper {
 
     private Boolean[] hasEventHappened() {
         final Boolean[] result = {false, false};
-
-        board.attachGameEventListener(new GameEventListener() {
-            @Override
-            public void onGameWon() {
-                result[0] = true;
-            }
-            @Override
-            public void onGameLost() {
-                result[1] = true;
-            }
-        });
+        board.attachGameWonEventListener(() -> result[0] = true);
+        board.attachGameLostEventListener(() -> result[1] = true);
         return result;
     }
 
