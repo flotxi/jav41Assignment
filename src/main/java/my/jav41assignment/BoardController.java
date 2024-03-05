@@ -11,6 +11,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 public class BoardController {
     @FXML
@@ -131,29 +132,28 @@ public class BoardController {
     }
 
     public void onGameWon() {
-        
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Du hast gewonnen! Möchtest du weiterspielen?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
-        alert.showAndWait();
-
-        if (alert.getResult() == ButtonType.NO) {
-            startGame();
-        }else{
-            Board.gameEndValue = Board.gameEndValue * 2;
-        }
+        showResult("Du hast gewonnen! Möchtest du weiterspielen?").ifPresent(response -> {
+            if (response == ButtonType.NO) {
+                startGame();
+            }else{
+                Board.gameEndValue = Board.gameEndValue * 2;
+            }
+        });
     }
 
-    private void showResult(String message, Object action) {
+    private Optional<ButtonType> showResult(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO);
+        return alert.showAndWait();
     }
-
 
     public void onGameLost() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Du hast verloren! Möchtest du nochmal von vorn beginnen?", ButtonType.YES, ButtonType.NO);
-        alert.showAndWait();
-
-        if (alert.getResult() == ButtonType.YES) {
-            startGame();
-        }else{
-            System.exit(0);
-        }
+        showResult("Du hast verloren! Möchtest du nochmal von vorn beginnen?").ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                startGame();
+            }else{
+                System.exit(0);
+            }
+        });
     }
+
 }
