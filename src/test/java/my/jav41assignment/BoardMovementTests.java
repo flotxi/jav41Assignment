@@ -56,7 +56,7 @@ class BoardMovementTests extends TestHelper {
 
 }
 
-class BoardRules extends TestHelper {
+class BoardRulesTests extends TestHelper {
 
     @Test
     void game_should_be_over() {
@@ -126,19 +126,9 @@ class BoardRules extends TestHelper {
             addNewField.invoke(board);
             addNewField.invoke(board);
             addNewField.invoke(board);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static void isScoreEverytimeTheSame(Integer downScore, Integer leftScore, Integer upScore, Integer rightScore) {
-        Assertions.assertEquals(downScore, leftScore);
-        Assertions.assertEquals(leftScore, upScore);
-        Assertions.assertEquals(upScore, rightScore);
     }
 
 }
@@ -192,9 +182,9 @@ class TestHelper {
 
     protected void fieldsAreEqualTo(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
         var fields = board.getFields();
-        for (int i = 0; i < fieldCoordinatesWithValue.length; i++) {
-            Assertions.assertEquals(fieldCoordinatesWithValue[i].expectedFieldValue().toString(),
-                    fields[fieldCoordinatesWithValue[i].rowToCheck()][fieldCoordinatesWithValue[i].columnToCheck()].getText());
+        for (FieldCoordinatesWithValue coordinatesWithValue : fieldCoordinatesWithValue) {
+            Assertions.assertEquals(coordinatesWithValue.expectedFieldValue().toString(),
+                    fields[coordinatesWithValue.rowToCheck()][coordinatesWithValue.columnToCheck()].getText());
 
         }
     }
