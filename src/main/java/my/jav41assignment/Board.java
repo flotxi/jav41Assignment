@@ -69,10 +69,10 @@ public class Board {
                         var neighbour = fields[rowCount + movement.getNeighbour().row()]
                                             [columnCount + movement.getNeighbour().column()];
                         if (field.getValue().equals(neighbour.getValue() )|| field.getValue() == 0){
+                            fieldsGotMoved = true; //neighbour.getValue() != 0;
                             field.setValue(neighbour.getValue() + field.getValue());
                             score = score + neighbour.getValue();
                             neighbour.setValue(0);
-                            fieldsGotMoved = true;
                         }
 
                     }catch (ArrayIndexOutOfBoundsException e){

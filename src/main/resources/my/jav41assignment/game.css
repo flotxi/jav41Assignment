@@ -1,0 +1,24 @@
+.root{
+    -fx-background-color: rgb(204, 192, 179);
+}
+.label{
+    -fx-font: 50 clear-sans;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(119, 110, 101);
+}
+.column{
+    -fx-border-width: 0 6 6 0;
+    -fx-border-color: rgb(249, 246, 242);
+}
+.column.left{
+    -fx-border-width: 0 6 6 6;
+    -fx-border-color: rgb(249, 246, 242);
+}
+.top{
+    -fx-border-width: 6 6 6 0;
+    -fx-border-color: rgb(249, 246, 242);
+}
+.top.column.left {
+    -fx-border-width: 6;
+    -fx-border-color: rgb(249, 246, 242);
+}

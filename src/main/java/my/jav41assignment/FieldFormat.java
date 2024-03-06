@@ -13,18 +13,18 @@ public class FieldFormat {
 
     private void calculateColor() {
        this.color =  switch (this.value){
-            case 2 -> Color.BLUE;
-            case 4 -> Color.RED;
-            case 8 -> Color.ALICEBLUE;
-            case 16 -> Color.BEIGE;
-            case 32 -> Color.BROWN;
-            case 64 -> Color.YELLOW;
-            case 128 -> Color.ROSYBROWN;
-            case 256 -> Color.PALEGREEN;
-            case 512 -> Color.ORANGE;
-            case 1024 -> Color.FIREBRICK;
-            case 2048 -> Color.GREEN;
-           default -> Color.WHITE;
+            case 2 -> Color.rgb(238, 228, 218);
+            case 4 -> Color.rgb(237, 224, 200);
+            case 8 -> Color.rgb(242, 177, 121);
+            case 16 -> Color.rgb(245, 149, 99);
+            case 32 -> Color.rgb(246, 124, 95);
+            case 64 -> Color.rgb(246, 94, 59);
+            case 128 -> Color.rgb(237, 207, 114);
+            case 256 -> Color.rgb(237, 204, 97);
+            case 512 -> Color.rgb(237, 200, 80);
+            case 1024 -> Color.rgb(237, 197, 63);
+            case 2048 -> Color.rgb(237, 194, 46);
+           default -> Color.rgb(204, 192, 179);
         };
     }
 

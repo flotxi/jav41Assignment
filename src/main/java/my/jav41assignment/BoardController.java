@@ -9,6 +9,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -69,27 +71,38 @@ public class BoardController {
 
     private void createLabels(){
         var gridPane = new GridPane();
-
+        double squareLength = 700.0 / Board.gameSize;
         for( int size = 0; size < Board.gameSize; size++){
             var column = new ColumnConstraints();
-            column.setHgrow(Priority.ALWAYS);
-            column.setPercentWidth(100.0 / Board.gameSize);
+            column.setMinWidth(squareLength);
+            column.setPrefWidth(squareLength);
             gridPane.getColumnConstraints().add(column);
 
             var row = new RowConstraints();
-            row.setPercentHeight(100.0 / Board.gameSize);
+            row.setMinHeight(squareLength);
+            row.setPrefHeight(squareLength);
             gridPane.getRowConstraints().add(row);
         }
-
         for( int row = 0; row < Board.gameSize; row++){
             for (int column = 0; column < Board.gameSize; column++ ){
                 var label = new Label();
                 label.setPrefSize(100,100);
+
+                label.getStyleClass().add("column");
+                label.getStyleClass().add("labelFont");
+
+                if ( column == 0 ) {
+                    label.getStyleClass().add("left");
+                }
+                if (row == 0) {
+                    label.getStyleClass().add("top");
+                }
+
                 gridPane.add(label, column, row);
                 this.labels[row][column] = label;
             }
         }
-        gridPane.setGridLinesVisible(true);
+        //gridPane.setGridLinesVisible(true);
         vbox.getChildren().add(gridPane);
 
     }
@@ -111,6 +124,7 @@ public class BoardController {
                 label.setText(field.getText() );
                 label.setBackground(new Background(new BackgroundFill(field.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
                 label.setMaxWidth(Double.MAX_VALUE);
+                label.setMaxHeight(Double.MAX_VALUE);
                 label.setAlignment(Pos.CENTER);
             }
         }
