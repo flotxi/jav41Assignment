@@ -22,3 +22,23 @@
     -fx-border-width: 6;
     -fx-border-color: rgb(249, 246, 242);
 }
+/* https://github.com/daniel-huang-1230/Game-2048/blob/master/Gui2048.java*/
+/*https://stackoverflow.com/questions/28417140/styling-default-javafx-dialogs/28421229#28421229 */
+.dialog{
+    -fx-background-color: rgb(204, 192, 179);
+}
+.dialog > *.button-bar > *.container{
+    -fx-background-color: rgb(204, 192, 179);
+}
+.dialog > *.label.content{
+    -fx-font: 14 clear-sans;
+    -fx-fill: rgb(119, 110, 101);
+}
+.dialog:header *.header-panel{
+    -fx-background-color: rgb(204, 192, 179);
+}
+.dialog:header *.header-panel *.label{
+    -fx-font: 18 clear-sans;
+    -fx-font-weight: bold;
+    -fx-fill: rgb(119, 110, 101);
+}
