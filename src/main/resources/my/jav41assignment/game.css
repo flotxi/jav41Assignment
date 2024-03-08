@@ -1,5 +1,6 @@
 .root{
     -fx-background-color: rgb(204, 192, 179);
+    -fx-default-button: rgb(119, 110, 101);
 }
 .label{
     -fx-font: 50 clear-sans;
@@ -34,6 +35,7 @@
     -fx-font: 14 clear-sans;
     -fx-fill: rgb(119, 110, 101);
 }
+
 .dialog:header *.header-panel{
     -fx-background-color: rgb(204, 192, 179);
 }
