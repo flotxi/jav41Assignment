@@ -96,6 +96,7 @@ public class Board {
         }else{
             if(isGameOver()) {
                 gameLostListeners.forEach(GameLostListener::onGameLost);
+                score = 0;
             }
         }
         return score;
