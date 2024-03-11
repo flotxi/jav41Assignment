@@ -90,8 +90,7 @@ class BoardRulesTests extends TestHelper {
 
         board.move(KeyCode.DOWN);
 
-        Assertions.assertTrue(eventSpy[1]);
-
+        Assertions.assertTrue(eventSpy[1], () -> "Game LOST event was NOT triggered!");
     }
 
     @Test
@@ -100,7 +99,7 @@ class BoardRulesTests extends TestHelper {
 
         board.move(KeyCode.DOWN);
 
-        Assertions.assertTrue(eventSpy[0]);
+        Assertions.assertTrue(eventSpy[0], () -> "Game WON event was NOT triggered!");
     }
 
     private Boolean[] hasEventHappened() {
