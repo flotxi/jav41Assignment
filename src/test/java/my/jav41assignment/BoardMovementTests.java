@@ -4,6 +4,7 @@ import javafx.scene.input.KeyCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -56,28 +57,50 @@ class BoardMovementTests extends TestHelper {
 
 }
 
+class AdvancedBoardMovementTests extends TestHelper {
+
+    @Test
+    void no_double_addition_expected() {
+        int column = 1;
+        initializeBoardWithMocker(new FieldCoordinatesWithValue(0, column, 4),
+                new FieldCoordinatesWithValue(1, column, 2));
+
+        addNewFieldToMocker(new FieldCoordinatesWithValue(2, column, 2));
+
+        board.move(KeyCode.DOWN);
+
+        fieldsAreEqualTo(new FieldCoordinatesWithValue(2, column, 4),
+                new FieldCoordinatesWithValue(3, column, 4));
+    }
+
+}
+
 class BoardRulesTests extends TestHelper {
+
+    private Boolean[] eventSpy;
+    @BeforeEach
+    void setUp() {
+        fillBoardCompletely();
+        eventSpy = hasEventHappened();
+    }
 
     @Test
     void game_should_be_over() {
-        fillBoardCompletely(new FieldCoordinatesWithValue(0, 3, 2));
-        mock.currentIndex = mock.currentNumberIndex = 15;
-        final Boolean[] gameIsLost = hasEventHappened();
+        addNewFieldToMocker(new FieldCoordinatesWithValue(0, 3, 2));
 
         board.move(KeyCode.DOWN);
 
-        Assertions.assertTrue(gameIsLost[1]);
+        Assertions.assertTrue(eventSpy[1]);
 
     }
+
     @Test
     void game_should_be_won() {
-        fillBoardCompletely(new FieldCoordinatesWithValue(0, 3, 2048));
-        mock.currentIndex = mock.currentNumberIndex = 15;
-        final Boolean[] gameIsWon = hasEventHappened();
+        addNewFieldToMocker(new FieldCoordinatesWithValue(0, 3, 2048));
 
         board.move(KeyCode.DOWN);
 
-        Assertions.assertTrue(gameIsWon[0]);
+        Assertions.assertTrue(eventSpy[0]);
     }
 
     private Boolean[] hasEventHappened() {
@@ -87,11 +110,12 @@ class BoardRulesTests extends TestHelper {
         return result;
     }
 
-    private void fillBoardCompletely(FieldCoordinatesWithValue lastField) {
+    private void fillBoardCompletely() {
         initializeBoardWithMocker(
                 new FieldCoordinatesWithValue(0, 0, 2),
-                new FieldCoordinatesWithValue(0, 1, 4),
-                new FieldCoordinatesWithValue(0, 2, 8),
+                new FieldCoordinatesWithValue(0, 1, 4));
+
+        FieldCoordinatesWithValue[] fieldCoordinates = {new FieldCoordinatesWithValue(0, 2, 8),
                 new FieldCoordinatesWithValue(0, 3, 16),
                 new FieldCoordinatesWithValue(1, 0, 32),
                 new FieldCoordinatesWithValue(1, 1, 64),
@@ -103,31 +127,10 @@ class BoardRulesTests extends TestHelper {
                 new FieldCoordinatesWithValue(2, 3, 16),
                 new FieldCoordinatesWithValue(3, 0, 32),
                 new FieldCoordinatesWithValue(3, 1, 64),
-                new FieldCoordinatesWithValue(3, 2, 128),
-                lastField);
+                new FieldCoordinatesWithValue(3, 2, 128)};
 
-        Method addNewField;
-        try {
-            addNewField = Board.class.getDeclaredMethod("addNewField");
-            addNewField.setAccessible(true);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-            addNewField.invoke(board);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+        for (var fieldCoordinate : fieldCoordinates ) {
+            addNewFieldToMocker(fieldCoordinate);
         }
     }
 
@@ -147,14 +150,14 @@ class RandomizerMock implements Randomizer {
     @Override
     public Integer getNextNumber() {
         Integer result;
-        try{
+        try {
             result = mockFields[currentNumberIndex].expectedFieldValue();
             currentNumberIndex++;
-            if (currentNumberIndex == ( Board.gameSize * Board.gameSize - 1 ) ){
+            if (currentNumberIndex == (Board.gameSize * Board.gameSize - 1)) {
                 currentNumberIndex = 0;
             }
-        }catch (ArrayIndexOutOfBoundsException e){
-            result = 0;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            result = mockFields[0].expectedFieldValue();
         }
 
         return result;
@@ -165,12 +168,13 @@ class RandomizerMock implements Randomizer {
         try {
             var coordinatesWithValues = mockFields[currentIndex];
             currentIndex++;
-            if (currentIndex == ( Board.gameSize * Board.gameSize - 1 ) ){
+            if (currentIndex == (Board.gameSize * Board.gameSize - 1)) {
                 currentIndex = 0;
             }
             return new FieldCoordinates(coordinatesWithValues.rowToCheck(), coordinatesWithValues.columnToCheck());
-        } catch(ArrayIndexOutOfBoundsException e){
-            return new FieldCoordinates(2,2);   // fallback
+        } catch (ArrayIndexOutOfBoundsException e) {
+            var coordinatesWithValues = mockFields[0];
+            return new FieldCoordinates(coordinatesWithValues.rowToCheck(), coordinatesWithValues.columnToCheck());
         }
     }
 }
@@ -180,18 +184,36 @@ class TestHelper {
     Board board;
     RandomizerMock mock;
 
+    protected void addNewFieldToMocker(FieldCoordinatesWithValue fieldCoordinatesWithValue) {
+        Method addNewField;
+        try {
+            addNewField = Board.class.getDeclaredMethod("addNewField");
+            addNewField.setAccessible(true);
+            setMockFields(fieldCoordinatesWithValue);
+            addNewField.invoke(board);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     protected void fieldsAreEqualTo(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
         var fields = board.getFields();
         for (FieldCoordinatesWithValue coordinatesWithValue : fieldCoordinatesWithValue) {
             Assertions.assertEquals(coordinatesWithValue.expectedFieldValue().toString(),
-                    fields[coordinatesWithValue.rowToCheck()][coordinatesWithValue.columnToCheck()].getText());
+                    fields[coordinatesWithValue.rowToCheck()][coordinatesWithValue.columnToCheck()].getText()
+                    , () -> "Wrong value in row: " + coordinatesWithValue.rowToCheck() + " column: " + coordinatesWithValue.columnToCheck());
 
         }
     }
+
     protected void initializeBoardWithMocker(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
         mock = new RandomizerMock();
-        mock.mockFields = fieldCoordinatesWithValue;
+        setMockFields(fieldCoordinatesWithValue);
         board = new Board(mock);
+    }
+
+    private void setMockFields(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
+        mock.mockFields = fieldCoordinatesWithValue;
     }
 
 }
