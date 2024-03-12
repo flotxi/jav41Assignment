@@ -4,7 +4,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.paint.Color;
 
 public class FieldFormat {
-    private int value;
+    private final int value;
     private Paint color;
     public FieldFormat(int value){
         this.value = value;

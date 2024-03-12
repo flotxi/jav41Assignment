@@ -3,7 +3,7 @@ package my.jav41assignment;
 import javafx.scene.input.KeyCode;
 
 public class Movement {
-    private KeyResults keyResult;
+    private final KeyResults keyResult;
     public Movement(KeyCode key){
         keyResult = switch (key){
             case KeyCode.LEFT -> new LeftKey();
@@ -44,7 +44,7 @@ public class Movement {
         }
         @Override
         public Integer getStartPoint() {
-            return Board.gameSize - 1;
+            return Board.GAME_SIZE - 1;
         }
         @Override
         public FieldCoordinates getNeighbour() {
@@ -62,7 +62,7 @@ public class Movement {
         }
         @Override
         public Integer getStartPoint() {
-            return Board.gameSize - 1;
+            return Board.GAME_SIZE - 1;
         }
         @Override
         public FieldCoordinates getNeighbour() {
@@ -76,7 +76,7 @@ public class Movement {
         }
         @Override
         public Integer getEndPoint() {
-            return Board.gameSize;
+            return Board.GAME_SIZE;
         }
         @Override
         public Integer getStartPoint() {
@@ -94,7 +94,7 @@ public class Movement {
         }
         @Override
         public Integer getEndPoint() {
-            return Board.gameSize;
+            return Board.GAME_SIZE;
         }
         @Override
         public Integer getStartPoint() {

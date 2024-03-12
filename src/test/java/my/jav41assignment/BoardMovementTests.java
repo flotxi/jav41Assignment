@@ -145,7 +145,7 @@ record FieldCoordinatesWithValue(Integer rowToCheck, Integer columnToCheck, Inte
 
 class RandomizerMock implements Randomizer {
 
-    public FieldCoordinatesWithValue[] mockFields = new FieldCoordinatesWithValue[Board.gameSize * Board.gameSize];
+    public FieldCoordinatesWithValue[] mockFields = new FieldCoordinatesWithValue[Board.GAME_SIZE * Board.GAME_SIZE];
 
     public Integer currentIndex = 0;
     public Integer currentNumberIndex = 0;
@@ -156,7 +156,7 @@ class RandomizerMock implements Randomizer {
         try {
             result = mockFields[currentNumberIndex].expectedFieldValue();
             currentNumberIndex++;
-            if (currentNumberIndex == (Board.gameSize * Board.gameSize - 1)) {
+            if (currentNumberIndex == (Board.GAME_SIZE * Board.GAME_SIZE - 1)) {
                 currentNumberIndex = 0;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -171,7 +171,7 @@ class RandomizerMock implements Randomizer {
         try {
             var coordinatesWithValues = mockFields[currentIndex];
             currentIndex++;
-            if (currentIndex == (Board.gameSize * Board.gameSize - 1)) {
+            if (currentIndex == (Board.GAME_SIZE * Board.GAME_SIZE - 1)) {
                 currentIndex = 0;
             }
             return new FieldCoordinates(coordinatesWithValues.rowToCheck(), coordinatesWithValues.columnToCheck());
@@ -183,7 +183,7 @@ class RandomizerMock implements Randomizer {
 }
 
 class TestHelper {
-    int end = Board.gameSize - 1;
+    final int end = Board.GAME_SIZE - 1;
     Board board;
     RandomizerMock mock;
 
@@ -200,16 +200,16 @@ class TestHelper {
     }
 
     class MyAssertion implements Executable {
-        private String expectedText;
-        private String actualText;
-        private String assertMessage;
+        private final String expectedText;
+        private final String actualText;
+        private final String assertMessage;
         public MyAssertion(String expectedText, String actualText, String assertMessage){
             this.actualText = actualText;
             this.expectedText = expectedText;
             this.assertMessage = assertMessage;
         }
         @Override
-        public void execute() throws Throwable {
+        public void execute() {
             Assertions.assertEquals(expectedText, actualText, assertMessage);
         }
     }

@@ -24,7 +24,7 @@ public class BoardController {
     private VBox vbox;
     private Board board;
     private AnimationTimer timer;
-    private final Label[][] labels = new Label[Board.gameSize][Board.gameSize];
+    private final Label[][] labels = new Label[Board.GAME_SIZE][Board.GAME_SIZE];
     @FXML
     void initialize(){
         createLabels();
@@ -43,7 +43,7 @@ public class BoardController {
     }
 
     private void setScore(int newScore){
-        score.setText("Punktestand: " + newScore);
+        score.setText("Score: " + newScore);
     }
 
     private void startGameTimer() {
@@ -61,7 +61,7 @@ public class BoardController {
 
                 long seconds = tempDateTime.until(LocalDateTime.now(), ChronoUnit.SECONDS);
 
-                time.setText("Spieldauer: " +
+                time.setText("Duration: " +
                         String.format("%02d", hours) + ":" +
                         String.format("%02d", minutes) + ":" +
                         String.format("%02d", seconds));
@@ -72,8 +72,8 @@ public class BoardController {
 
     private void createLabels(){
         var gridPane = new GridPane();
-        double squareLength = 700.0 / Board.gameSize;
-        for( int size = 0; size < Board.gameSize; size++){
+        double squareLength = 700.0 / Board.GAME_SIZE;
+        for(int size = 0; size < Board.GAME_SIZE; size++){
             var column = new ColumnConstraints();
             column.setMinWidth(squareLength);
             column.setPrefWidth(squareLength);
@@ -84,8 +84,8 @@ public class BoardController {
             row.setPrefHeight(squareLength);
             gridPane.getRowConstraints().add(row);
         }
-        for( int row = 0; row < Board.gameSize; row++){
-            for (int column = 0; column < Board.gameSize; column++ ){
+        for(int row = 0; row < Board.GAME_SIZE; row++){
+            for (int column = 0; column < Board.GAME_SIZE; column++ ){
                 var label = new Label();
                 label.setPrefSize(100,100);
 
@@ -103,7 +103,6 @@ public class BoardController {
                 this.labels[row][column] = label;
             }
         }
-        //gridPane.setGridLinesVisible(true);
         vbox.getChildren().add(gridPane);
 
     }
@@ -117,8 +116,8 @@ public class BoardController {
     private void updateLabels() {
         var fields = board.getFields();
 
-        for( int row = 0; row < Board.gameSize; row++){
-            for (int column = 0; column < Board.gameSize; column++ ){
+        for(int row = 0; row < Board.GAME_SIZE; row++){
+            for (int column = 0; column < Board.GAME_SIZE; column++ ){
                 var field = fields[row][column];
                 var label = labels[row][column];
 
@@ -147,11 +146,11 @@ public class BoardController {
     }
 
     public void onGameWon() {
-        showResult("Du hast gewonnen! Möchtest du weiterspielen?").ifPresent(response -> {
+        showResult("Congratulations! You won! Do you want to keep playing?").ifPresent(response -> {
             if (response == ButtonType.NO) {
                 startGame();
             }else{
-                Board.gameEndValue = Board.gameEndValue * 2;
+                board.keepPlaying();
             }
         });
     }
@@ -170,7 +169,7 @@ public class BoardController {
     }
 
     public void onGameLost() {
-        showResult("Du hast verloren! Möchtest du nochmal von vorn beginnen?").ifPresent(response -> {
+        showResult("Oh no, you lost! Do you want to start again?").ifPresent(response -> {
             if (response == ButtonType.YES) {
                 startGame();
             }else{
