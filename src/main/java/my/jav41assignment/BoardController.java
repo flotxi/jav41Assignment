@@ -157,6 +157,8 @@ public class BoardController {
     }
 
     private Optional<ButtonType> showResult(String message) {
+        updateLabels();
+
         timer.stop();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO);
