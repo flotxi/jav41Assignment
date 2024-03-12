@@ -133,8 +133,8 @@ public class BoardController {
 
     private void moveBoard(KeyEvent keyEvent) {
         try {
-           var newScore = board.move(keyEvent.getCode());
-           setScore(newScore);
+           board.move(keyEvent.getCode());
+           setScore(board.getScore());
         } catch ( Exception  wrongKey ){
             // do nothing
         }

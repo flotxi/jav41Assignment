@@ -11,6 +11,11 @@ public class Board {
     public static Integer gameEndValue = 2048;
     private final Randomizer randomizer;
     private final Field[][] fields = new Field[gameSize][gameSize];
+
+    public Integer getScore() {
+        return score;
+    }
+
     private Integer score = 0;
     private final List<GameWonListener> gameWonListeners;
     private final List<GameLostListener> gameLostListeners;
@@ -75,7 +80,7 @@ public class Board {
     }
 
 
-    public Integer move(KeyCode key) {
+    public void move(KeyCode key) {
         var fieldsGotMoved = tryMovement(key, false);
 
         if (fieldsGotMoved) {
@@ -85,10 +90,9 @@ public class Board {
         if (isGameWon()) {
             gameWonListeners.forEach(GameWonListener::onGameWon);
         } else if (isGameOver()) {
-            gameLostListeners.forEach(GameLostListener::onGameLost);
             score = 0;
+            gameLostListeners.forEach(GameLostListener::onGameLost);
         }
-        return score;
     }
 
     private boolean tryMovement(KeyCode key, boolean justSimulate) {
