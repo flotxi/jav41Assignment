@@ -10,7 +10,6 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Rectangle;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -24,6 +23,7 @@ public class BoardController {
     @FXML
     private VBox vbox;
     private Board board;
+    AnimationTimer timer;
     private final Label[][] labels = new Label[Board.gameSize][Board.gameSize];
     @FXML
     void initialize(){
@@ -48,7 +48,7 @@ public class BoardController {
 
     private void startGameTimer() {
         var gameStart = LocalDateTime.now();
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 LocalDateTime tempDateTime = gameStart;
@@ -157,6 +157,8 @@ public class BoardController {
     }
 
     private Optional<ButtonType> showResult(String message) {
+        timer.stop();
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(
