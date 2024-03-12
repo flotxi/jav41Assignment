@@ -23,7 +23,7 @@ public class BoardController {
     @FXML
     private VBox vbox;
     private Board board;
-    AnimationTimer timer;
+    private AnimationTimer timer;
     private final Label[][] labels = new Label[Board.gameSize][Board.gameSize];
     @FXML
     void initialize(){
