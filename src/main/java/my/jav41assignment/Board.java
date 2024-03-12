@@ -48,6 +48,7 @@ public class Board {
             fieldCoordinates = randomizer.getNextFieldCoordinates();
             tries++;
             if (tries == maxTries) {
+                fieldCoordinates = justTryToGetOneEmptyField();
                 break;
             }
         }
@@ -60,6 +61,19 @@ public class Board {
             return false;
         }
     }
+
+    private FieldCoordinates justTryToGetOneEmptyField() {
+        for (var row = 0; row < gameSize; row++){
+            for (var column = 0; column < gameSize; column++){
+               var field = fields[row][column];
+               if(field.getValue() == 0){
+                   return new FieldCoordinates(row,column);
+               }
+            }
+        }
+        return new FieldCoordinates(0,0);
+    }
+
 
     public Integer move(KeyCode key) {
         var fieldsGotMoved = tryMovement(key, false);
