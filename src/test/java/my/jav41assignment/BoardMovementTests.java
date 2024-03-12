@@ -4,6 +4,7 @@ import javafx.scene.input.KeyCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -64,13 +65,15 @@ class AdvancedBoardMovementTests extends TestHelper {
         int column = 1;
         initializeBoardWithMocker(new FieldCoordinatesWithValue(0, column, 4),
                 new FieldCoordinatesWithValue(1, column, 2));
-
         addNewFieldToMocker(new FieldCoordinatesWithValue(2, column, 2));
+
+        setMockFields(new FieldCoordinatesWithValue(2, 3, 4));
 
         board.move(KeyCode.DOWN);
 
         fieldsAreEqualTo(new FieldCoordinatesWithValue(2, column, 4),
-                new FieldCoordinatesWithValue(3, column, 4));
+                new FieldCoordinatesWithValue(3, column, 4),
+                new FieldCoordinatesWithValue(3, 3, 4));
     }
 
 }
@@ -78,6 +81,7 @@ class AdvancedBoardMovementTests extends TestHelper {
 class BoardRulesTests extends TestHelper {
 
     private Boolean[] eventSpy;
+
     @BeforeEach
     void setUp() {
         fillBoardCompletely();
@@ -90,7 +94,7 @@ class BoardRulesTests extends TestHelper {
 
         board.move(KeyCode.DOWN);
 
-        Assertions.assertTrue(eventSpy[1], () -> "Game LOST event was NOT triggered!");
+        Assertions.assertTrue(eventSpy[1], "Game LOST event was NOT triggered!");
     }
 
     @Test
@@ -99,7 +103,7 @@ class BoardRulesTests extends TestHelper {
 
         board.move(KeyCode.DOWN);
 
-        Assertions.assertTrue(eventSpy[0], () -> "Game WON event was NOT triggered!");
+        Assertions.assertTrue(eventSpy[0], "Game WON event was NOT triggered!");
     }
 
     private Boolean[] hasEventHappened() {
@@ -128,7 +132,7 @@ class BoardRulesTests extends TestHelper {
                 new FieldCoordinatesWithValue(3, 1, 64),
                 new FieldCoordinatesWithValue(3, 2, 128)};
 
-        for (var fieldCoordinate : fieldCoordinates ) {
+        for (var fieldCoordinate : fieldCoordinates) {
             addNewFieldToMocker(fieldCoordinate);
         }
     }
@@ -195,15 +199,37 @@ class TestHelper {
         }
     }
 
-    protected void fieldsAreEqualTo(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
-        var fields = board.getFields();
-        for (FieldCoordinatesWithValue coordinatesWithValue : fieldCoordinatesWithValue) {
-            Assertions.assertEquals(coordinatesWithValue.expectedFieldValue().toString(),
-                    fields[coordinatesWithValue.rowToCheck()][coordinatesWithValue.columnToCheck()].getText()
-                    , () -> "Wrong value in row: " + coordinatesWithValue.rowToCheck() + " column: " + coordinatesWithValue.columnToCheck());
-
+    class MyAssertion implements Executable {
+        private String expectedText;
+        private String actualText;
+        private String assertMessage;
+        public MyAssertion(String expectedText, String actualText, String assertMessage){
+            this.actualText = actualText;
+            this.expectedText = expectedText;
+            this.assertMessage = assertMessage;
+        }
+        @Override
+        public void execute() throws Throwable {
+            Assertions.assertEquals(expectedText, actualText, assertMessage);
         }
     }
+
+    protected void fieldsAreEqualTo(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
+
+        Executable[] myAssertions = new Executable[fieldCoordinatesWithValue.length];
+
+        int index = 0;
+        var actual = board.getFields();
+        for (var expected : fieldCoordinatesWithValue) {
+            var expectedText = expected.expectedFieldValue().toString();
+            var actualText = actual[expected.rowToCheck()][expected.columnToCheck()].getText();
+            var assertMessage = "Wrong value in row: " + expected.rowToCheck() + " column: " + expected.columnToCheck();
+            myAssertions[index] = new MyAssertion(expectedText, actualText, assertMessage);
+            index++;
+        }
+        Assertions.assertAll( myAssertions );
+    }
+
 
     protected void initializeBoardWithMocker(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
         mock = new RandomizerMock();
@@ -211,7 +237,7 @@ class TestHelper {
         board = new Board(mock);
     }
 
-    private void setMockFields(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
+    protected void setMockFields(FieldCoordinatesWithValue... fieldCoordinatesWithValue) {
         mock.mockFields = fieldCoordinatesWithValue;
     }
 
