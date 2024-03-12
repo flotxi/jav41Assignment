@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import static my.jav41assignment.Game.resourceBundle;
+
+
 public class BoardController {
     @FXML
     public Label time;
@@ -25,6 +28,7 @@ public class BoardController {
     private Board board;
     private AnimationTimer timer;
     private final Label[][] labels = new Label[Board.GAME_SIZE][Board.GAME_SIZE];
+
     @FXML
     void initialize(){
         createLabels();
@@ -43,7 +47,7 @@ public class BoardController {
     }
 
     private void setScore(int newScore){
-        score.setText("Score: " + newScore);
+        score.setText(resourceBundle.getString("score") + newScore);
     }
 
     private void startGameTimer() {
@@ -61,7 +65,7 @@ public class BoardController {
 
                 long seconds = tempDateTime.until(LocalDateTime.now(), ChronoUnit.SECONDS);
 
-                time.setText("Duration: " +
+                time.setText(resourceBundle.getString("duration")  +
                         String.format("%02d", hours) + ":" +
                         String.format("%02d", minutes) + ":" +
                         String.format("%02d", seconds));
@@ -146,7 +150,7 @@ public class BoardController {
     }
 
     public void onGameWon() {
-        showResult("Congratulations! You won! Do you want to keep playing?").ifPresent(response -> {
+        showResult(resourceBundle.getString("won")).ifPresent(response -> {
             if (response == ButtonType.NO) {
                 startGame();
             }else{
@@ -161,6 +165,10 @@ public class BoardController {
         timer.stop();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO);
+
+        alert.setTitle(resourceBundle.getString("alertTitle"));
+        alert.setHeaderText(resourceBundle.getString("alertHeader"));
+
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(
                 getClass().getResource("game.css").toExternalForm());
@@ -169,7 +177,7 @@ public class BoardController {
     }
 
     public void onGameLost() {
-        showResult("Oh no, you lost! Do you want to start again?").ifPresent(response -> {
+        showResult(resourceBundle.getString("lost")).ifPresent(response -> {
             if (response == ButtonType.YES) {
                 startGame();
             }else{

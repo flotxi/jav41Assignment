@@ -104,6 +104,7 @@ public class Board {
                         var neighbour = fields[rowCount + movement.getNeighbour().row()]
                                 [columnCount + movement.getNeighbour().column()];
                         if (field.getValue().equals(neighbour.getValue()) || field.getValue() == 0) {
+                            fieldsGotMoved = true;
                             if (justSimulate) {
                                 return true;
                             }

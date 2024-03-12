@@ -10,7 +10,7 @@ public class Movement {
             case KeyCode.UP-> new UpKey();
             case KeyCode.DOWN -> new DownKey();
             case KeyCode.RIGHT -> new RightKey();
-            default-> throw new RuntimeException() ;
+            default-> throw new UnsupportedKeyException() ;
         };
     }
     public FieldCoordinates getNeighbour(){
