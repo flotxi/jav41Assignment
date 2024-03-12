@@ -14,8 +14,11 @@ public class Field {
     public String getText(){
         return value == 0 ? "" : value.toString();
     }
+    public Paint getBackgroundColor(){
+        return new FieldFormat(value).getBackgroundColor();
+    }
     public Paint getColor(){
-        return new FieldFormat(this.value).getColor();
+        return new FieldFormat(value).getFieldColor();
     }
 
 }

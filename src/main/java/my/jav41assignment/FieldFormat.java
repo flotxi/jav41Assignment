@@ -5,14 +5,20 @@ import javafx.scene.paint.Color;
 
 public class FieldFormat {
     private final int value;
-    private Paint color;
+    private Paint backgroundColor;
+    private Paint fieldColor;
     public FieldFormat(int value){
         this.value = value;
-        this.calculateColor();
+        this.calculateBackgroundColor();
+        this.calculateFieldColor();
     }
 
-    private void calculateColor() {
-       this.color =  switch (this.value){
+    private void calculateFieldColor() {
+        fieldColor = value == 2 || value == 4 ? Color.rgb(119, 110, 101) : Color.WHITE;
+    }
+
+    private void calculateBackgroundColor() {
+       backgroundColor =  switch (value){
             case 2 -> Color.rgb(238, 228, 218);
             case 4 -> Color.rgb(237, 224, 200);
             case 8 -> Color.rgb(242, 177, 121);
@@ -28,7 +34,10 @@ public class FieldFormat {
         };
     }
 
-    public Paint getColor(){
-        return this.color;
+    public Paint getBackgroundColor(){
+        return backgroundColor;
+    }
+    public Paint getFieldColor() {
+        return fieldColor;
     }
 }

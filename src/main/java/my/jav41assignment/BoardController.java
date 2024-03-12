@@ -126,7 +126,8 @@ public class BoardController {
                 var label = labels[row][column];
 
                 label.setText(field.getText() );
-                label.setBackground(new Background(new BackgroundFill(field.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+                label.setBackground(new Background(new BackgroundFill(field.getBackgroundColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+                label.setTextFill(field.getColor());
                 label.setMaxWidth(Double.MAX_VALUE);
                 label.setMaxHeight(Double.MAX_VALUE);
                 label.setAlignment(Pos.CENTER);

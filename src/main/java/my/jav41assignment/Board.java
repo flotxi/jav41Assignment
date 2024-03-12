@@ -117,11 +117,12 @@ public class Board {
                         // do nothing
                     }
 
-                    columnCount = columnCount + movement.getDirection();
+                    columnCount += movement.getDirection();
+
 
                 } while (!columnCount.equals(movement.getEndPoint()));
 
-                rowCount = rowCount + movement.getDirection();
+                rowCount += movement.getDirection();
 
             } while (!rowCount.equals(movement.getEndPoint()));
         }
