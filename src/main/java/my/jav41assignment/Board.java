@@ -122,9 +122,9 @@ public class Board {
     }
 
     private boolean isAnyMovementPossible() {
-        return  tryMovement(KeyCode.LEFT, true) &
-                tryMovement(KeyCode.UP, true) &
-                tryMovement(KeyCode.DOWN, true) &
+        return  tryMovement(KeyCode.LEFT, true) |
+                tryMovement(KeyCode.UP, true) |
+                tryMovement(KeyCode.DOWN, true) |
                 tryMovement(KeyCode.RIGHT, true);
     }
 

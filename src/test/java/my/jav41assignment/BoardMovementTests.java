@@ -73,7 +73,7 @@ class AdvancedBoardMovementTests extends TestHelper {
 
         fieldsAreEqualTo(new FieldCoordinatesWithValue(2, column, 4),
                 new FieldCoordinatesWithValue(3, column, 4),
-                new FieldCoordinatesWithValue(3, 3, 4));
+                new FieldCoordinatesWithValue(2, 3, 4));
     }
 
 }
