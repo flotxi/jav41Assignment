@@ -1,6 +1,10 @@
 package my.jav41assignment;
 
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
+import javafx.animation.Transition;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,6 +14,8 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -103,6 +109,42 @@ public class BoardController {
                     label.getStyleClass().add("top");
                 }
 
+                final Animation creationAnimation = new Transition() {
+                    {
+                        setCycleDuration(Duration.millis(300L));
+                    }
+                    @Override
+                    protected void interpolate(double progress) {
+                        final double total = label.getWidth() / 5.0;
+                        final double current = (1.0 - progress) * total;
+                        final var fill = label.getBackground().getFills().getFirst().getFill();
+                        label.setBackground(new Background(new BackgroundFill(fill, CornerRadii.EMPTY, new Insets(current, current, current, current))));
+                    }
+                };
+                final Animation additionAnimation = new Transition() {
+                    {
+                        setCycleDuration(Duration.millis(300L));
+                    }
+                    @Override
+                    protected void interpolate(double progress) {
+                        final double total = label.getWidth() / 14.0;
+                        final double current = (1.0 - progress) * total * -1;
+                        final var fill = label.getBackground().getFills().getFirst().getFill();
+                        label.setBackground(new Background(new BackgroundFill(fill, CornerRadii.EMPTY, new Insets(current, current, current, current))));
+                    }
+                };
+                label.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> ov, String oldText, String newText) {
+                        if(newText != "" && oldText == ""){
+                            creationAnimation.playFromStart();
+                        } else if (newText != "" && oldText != "") {
+                            if (Integer.valueOf(newText) == Integer.valueOf(oldText) * 2){
+                                additionAnimation.playFromStart();
+                            }
+                        }
+                    }
+                });
                 gridPane.add(label, column, row);
                 this.labels[row][column] = label;
             }
