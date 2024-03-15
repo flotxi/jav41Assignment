@@ -56,6 +56,27 @@ class BoardMovementTests extends TestHelper {
                 new FieldCoordinatesWithValue(end, 1, 4));
     }
 
+    @Test
+    void no_new_field_should_be_added() {
+        addNewFieldToBoard(new FieldCoordinatesWithValue(0, 1, 8));
+        addNewFieldToBoard(new FieldCoordinatesWithValue(0, 2, 16));
+        addNewFieldToBoard(new FieldCoordinatesWithValue(0, 3, 32));
+
+        board.move(KeyCode.UP);
+
+        fieldsAreEqualTo(new FieldCoordinatesWithValue(1, 1, 4),
+                new FieldCoordinatesWithValue(1, 2, 0),
+                new FieldCoordinatesWithValue(1, 3, 0),
+                new FieldCoordinatesWithValue(2, 0, 0),
+                new FieldCoordinatesWithValue(2, 1, 0),
+                new FieldCoordinatesWithValue(2, 2, 0),
+                new FieldCoordinatesWithValue(2, 3, 0),
+                new FieldCoordinatesWithValue(3, 0, 0),
+                new FieldCoordinatesWithValue(3, 1, 0),
+                new FieldCoordinatesWithValue(3, 2, 0),
+                new FieldCoordinatesWithValue(3, 3, 0));
+    }
+
 }
 
 class AdvancedBoardMovementTests extends TestHelper {
@@ -65,7 +86,7 @@ class AdvancedBoardMovementTests extends TestHelper {
         int column = 1;
         initializeBoardWithMocker(new FieldCoordinatesWithValue(0, column, 4),
                 new FieldCoordinatesWithValue(1, column, 2));
-        addNewFieldToMocker(new FieldCoordinatesWithValue(2, column, 2));
+        addNewFieldToBoard(new FieldCoordinatesWithValue(2, column, 2));
 
         setMockFields(new FieldCoordinatesWithValue(2, 3, 4));
 
@@ -90,7 +111,7 @@ class BoardRulesTests extends TestHelper {
 
     @Test
     void game_should_be_over() {
-        addNewFieldToMocker(new FieldCoordinatesWithValue(0, 3, 2));
+        addNewFieldToBoard(new FieldCoordinatesWithValue(0, 3, 2));
 
         board.move(KeyCode.DOWN);
 
@@ -99,7 +120,7 @@ class BoardRulesTests extends TestHelper {
 
     @Test
     void game_should_be_won() {
-        addNewFieldToMocker(new FieldCoordinatesWithValue(0, 3, 2048));
+        addNewFieldToBoard(new FieldCoordinatesWithValue(0, 3, 2048));
 
         board.move(KeyCode.DOWN);
 
@@ -133,7 +154,7 @@ class BoardRulesTests extends TestHelper {
                 new FieldCoordinatesWithValue(3, 2, 128)};
 
         for (var fieldCoordinate : fieldCoordinates) {
-            addNewFieldToMocker(fieldCoordinate);
+            addNewFieldToBoard(fieldCoordinate);
         }
     }
 
@@ -187,7 +208,7 @@ class TestHelper {
     Board board;
     RandomizerMock mock;
 
-    protected void addNewFieldToMocker(FieldCoordinatesWithValue fieldCoordinatesWithValue) {
+    protected void addNewFieldToBoard(FieldCoordinatesWithValue fieldCoordinatesWithValue) {
         Method addNewField;
         try {
             addNewField = Board.class.getDeclaredMethod("addNewField");
@@ -222,7 +243,7 @@ class TestHelper {
         var actual = board.getFields();
         for (var expected : fieldCoordinatesWithValue) {
             var expectedText = expected.expectedFieldValue().toString();
-            var actualText = actual[expected.rowToCheck()][expected.columnToCheck()].getText();
+            var actualText = actual[expected.rowToCheck()][expected.columnToCheck()].getValue().toString();
             var assertMessage = "Wrong value in row: " + expected.rowToCheck() + " column: " + expected.columnToCheck();
             myAssertions[index] = new MyAssertion(expectedText, actualText, assertMessage);
             index++;
