@@ -67,7 +67,7 @@ public class Board {
         for (var row = 0; row < GAME_SIZE; row++){
             for (var column = 0; column < GAME_SIZE; column++){
                var field = fields[row][column];
-               if(field.getValue() == 0){
+               if(isFieldEmpty(field)){
                    return new FieldCoordinates(row,column);
                }
             }
@@ -93,40 +93,104 @@ public class Board {
 
     private boolean tryMovement(KeyCode key, boolean justSimulate) {
         boolean fieldsGotMoved = false;
-        var movement = new Movement(key);
+
+        Field first;
+        Field second;
+        Field third;
+        Field fourth;
+
         for (int i = 0; i < GAME_SIZE; i++) {
-            var rowCount = movement.getStartPoint();
-            do {
-                var columnCount = movement.getStartPoint();
-                do {
-                    var field = fields[rowCount][columnCount];
-                    try {
-                        var neighbour = fields[rowCount + movement.getNeighbour().row()]
-                                [columnCount + movement.getNeighbour().column()];
-                        if (field.getValue().equals(neighbour.getValue()) || field.getValue() == 0) {
-                            fieldsGotMoved = true;
-                            if (justSimulate) {
-                                return true;
-                            }
-                            field.setValue(neighbour.getValue() + field.getValue());
-                            score = score + neighbour.getValue();
-                            neighbour.setValue(0);
-                        }
 
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        // do nothing
+            switch (key) {
+                case LEFT:
+                    first = fields[i][0];
+                    second = fields[i][1];
+                    third = fields[i][2];
+                    fourth = fields[i][3];
+                    break;
+                case RIGHT:
+                    first = fields[i][3];
+                    second = fields[i][2];
+                    third = fields[i][1];
+                    fourth = fields[i][0];
+                    break;
+                case UP:
+                    first = fields[0][i];
+                    second = fields[1][i];
+                    third = fields[2][i];
+                    fourth = fields[3][i];
+                    break;
+                case DOWN:
+                    first = fields[3][i];
+                    second = fields[2][i];
+                    third = fields[1][i];
+                    fourth = fields[0][i];
+                    break;
+                default:
+                    continue;
+            }
+            // todo Simulation is not yet fully implemented
+            if(justSimulate) {
+                fieldsGotMoved = areFieldsMergeable(first, second) ||
+                        areFieldsMergeable(second, third) ||
+                        areFieldsMergeable(third, fourth);
+            }else {
+                // 1. Additionen
+                if (areFieldsMergeable(first, second)) {
+                    updateScore(first, second);
+                    mergeFields(first, second);
+                    fieldsGotMoved = true;
+
+                } else if (areFieldsMergeable(second, third)) {
+                    updateScore(second, third);
+                    mergeFields(second, third);
+                    fieldsGotMoved = true;
+
+                } else if (areFieldsMergeable(third, fourth)) {
+                    updateScore(third, fourth);
+                    mergeFields(third, fourth);
+                    fieldsGotMoved = true;
+                }
+
+                // 2. Verschiebungen
+                for ( var move = 0; move < GAME_SIZE; move++) {
+                    if (isFieldEmpty(first) && !isFieldEmpty(second)  ) {
+                        mergeFields(first, second);
+                        fieldsGotMoved = true;
                     }
+                    if (isFieldEmpty(second) && !isFieldEmpty(third) ) {
+                        mergeFields(second, third);
+                        fieldsGotMoved = true;
+                    }
+                    if (isFieldEmpty(third) && !isFieldEmpty(fourth) ) {
+                        mergeFields(third, fourth);
+                        fieldsGotMoved = true;
+                    }
+                }
+            }
 
-                    columnCount += movement.getDirection();
-
-
-                } while (!columnCount.equals(movement.getEndPoint()));
-
-                rowCount += movement.getDirection();
-
-            } while (!rowCount.equals(movement.getEndPoint()));
         }
-        return fieldsGotMoved;
+
+        return fieldsGotMoved ;
+    }
+
+    private void updateScore(Field first, Field second) {
+        if(first.getValue() != 0 && second.getValue() != 0) {
+            score += second.getValue();
+        }
+    }
+
+    private boolean isFieldEmpty(Field field) {
+        return field.getValue() == 0;
+    }
+
+    private boolean areFieldsMergeable(Field first, Field second) {
+        return first.getValue().equals(second.getValue()) && first.getValue() != 0;
+    }
+
+    private void mergeFields(Field first, Field second) {
+        first.setValue(first.getValue() + second.getValue());
+        second.setValue(0);
     }
 
     // Game is only over when the board filled is and there is no more movement possible
