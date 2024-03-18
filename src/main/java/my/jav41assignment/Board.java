@@ -141,9 +141,24 @@ public class Board {
                     mergeFields(first, second);
                     fieldsGotMoved = true;
 
+                } else if (areFieldsMergeable(first, third) && second.getValue() == 0) {
+                    updateScore(first, third);
+                    mergeFields(first, third);
+                    fieldsGotMoved = true;
+
+                } else if (areFieldsMergeable(first, fourth) && second.getValue() == 0 && third.getValue() == 0) {
+                    updateScore(first, fourth);
+                    mergeFields(first, fourth);
+                    fieldsGotMoved = true;
+
                 } else if (areFieldsMergeable(second, third)) {
                     updateScore(second, third);
                     mergeFields(second, third);
+                    fieldsGotMoved = true;
+
+                } else if (areFieldsMergeable(second, fourth) && third.getValue() == 0) {
+                    updateScore(second, fourth);
+                    mergeFields(second, fourth);
                     fieldsGotMoved = true;
 
                 } else if (areFieldsMergeable(third, fourth)) {
